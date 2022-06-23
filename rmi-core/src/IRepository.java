@@ -1,7 +1,7 @@
 import java.rmi.Remote;
 import java.util.List;
 
-public interface IRepository extends Remote {
+public interface IRepository extends Remote,IAggregate {
 
     public String delete_all() throws RepException;
     public String delete(String key) throws RepException;

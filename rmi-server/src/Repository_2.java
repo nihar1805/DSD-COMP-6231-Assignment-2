@@ -9,25 +9,25 @@ import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.List;
 
-public class Repository_1 extends Repository_Impl {
-    private HashMap<String, List<Integer>> r1 = new HashMap<>();
+public class Repository_2 extends Repository2_Impl {
+    private HashMap<String, List<Integer>> r2 = new HashMap<>();
     private static InetAddress clientAddress;
     private static Integer clientPort;
 
-    protected Repository_1() throws RemoteException {
+    protected Repository_2() throws RemoteException {
         super();
     }
 
     public static void main(String[] args) throws Exception {
-        Repository_Impl r1obj = new Repository_Impl();
-        Registry reg = LocateRegistry.createRegistry(9630);
-        reg.bind("r1", r1obj);
-        System.out.println("Repository Server 1 Running on port 9630");
+        Repository_Impl r2obj = new Repository_Impl();
+        Registry reg = LocateRegistry.createRegistry(5454);
+        reg.bind("r2", r2obj);
+        System.out.println("Repository Server 2 Running  on port 5454");
 
         Runnable UDPServer = new Runnable() {
             public void run() {
                 try {
-                    protocol(r1obj);
+                    protocol(r2obj);
                 } catch (IOException | RepException e) {
                     e.printStackTrace();
                 }
@@ -38,7 +38,7 @@ public class Repository_1 extends Repository_Impl {
 
     }
 
-    private static void protocol(Repository_Impl r1obj) throws IOException, RepException {
+    private static void protocol(Repository_Impl r2obj) throws IOException, RepException {
         DatagramSocket  ds=null;
         ds = new DatagramSocket(1230);
         while (true) {
@@ -58,17 +58,17 @@ public class Repository_1 extends Repository_Impl {
             if (msg_array[0].equals("SET")) {
 //                System.out.println("set method call");
                 String ls = null;
-                ls = r1obj.set(msg_array[1], Integer.parseInt(msg_array[2]));
+                ls = r2obj.set(msg_array[1], Integer.parseInt(msg_array[2]));
                 buffer = ls.getBytes(StandardCharsets.UTF_8);
 
             } else if (msg_array[0].equals( "DELETE")) {
                 String ls = null;
-                ls = r1obj.delete(msg_array[1]);
+                ls = r2obj.delete(msg_array[1]);
                 buffer = ls.getBytes(StandardCharsets.UTF_8);
             }
 
             else if(msg_array[0].equals("LIST")) {
-                List<String> list_keys = r1obj.list();
+                List<String> list_keys = r2obj.list();
                 String reply = "";
                 if (list_keys.get(0).equals("empty")){
                     buffer = "No keys found".getBytes(StandardCharsets.UTF_8);
@@ -83,7 +83,7 @@ public class Repository_1 extends Repository_Impl {
             }
 
             else if(msg_array[0].equals("GET")) {
-                List<Integer> res = r1obj.get(msg_array[1]);
+                List<Integer> res = r2obj.get(msg_array[1]);
                 if (res.get(0) == 0){
                     buffer = "Key doesn't exist".getBytes(StandardCharsets.UTF_8);
                 }
@@ -100,27 +100,27 @@ public class Repository_1 extends Repository_Impl {
             }
 
             else if (msg_array[0].equals("SUM")) {
-                String ls = String.valueOf(r1obj.sum(msg_array[1]));
+                String ls = String.valueOf(r2obj.sum(msg_array[1]));
                 buffer = ls.getBytes(StandardCharsets.UTF_8);
             }
 
             else if (msg_array[0].equals("ADD")) {
-                String ls = r1obj.add(msg_array[1], Integer.parseInt(msg_array[2]));
+                String ls = r2obj.add(msg_array[1], Integer.parseInt(msg_array[2]));
                 buffer = ls.getBytes(StandardCharsets.UTF_8);
             }
 
             else if (msg_array[0].equals("RESET")) {
-                String ls = r1obj.delete_all();
+                String ls = r2obj.delete_all();
                 buffer = ls.getBytes(StandardCharsets.UTF_8);
             }
 
             else if (msg_array[0].equals("MIN")) {
-                String ls = String.valueOf(r1obj.min(msg_array[1]));
+                String ls = String.valueOf(r2obj.min(msg_array[1]));
                 buffer = ls.getBytes(StandardCharsets.UTF_8);
             }
 
             else if (msg_array[0].equals("MAX")) {
-                String ls = String.valueOf(r1obj.max(msg_array[1]));
+                String ls = String.valueOf(r2obj.max(msg_array[1]));
                 buffer = ls.getBytes(StandardCharsets.UTF_8);
             }
 
