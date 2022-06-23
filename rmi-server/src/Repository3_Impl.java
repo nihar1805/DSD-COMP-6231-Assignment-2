@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Repository1_Impl extends UnicastRemoteObject implements IRepository{
+public class Repository3_Impl extends UnicastRemoteObject implements IRepository{
     private HashMap<String, List<Integer>> repo;
 
-    protected Repository1_Impl() throws RemoteException {
+    protected Repository3_Impl() throws RemoteException {
         super();
     }
 
@@ -69,5 +69,20 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
         }
 
         return repo.get(key);
+    }
+
+    @Override
+    public int sum(String key) throws RepException {
+        return 0;
+    }
+
+    @Override
+    public int min(String key) throws RepException {
+        return 0;
+    }
+
+    @Override
+    public int max(String key) throws RepException {
+        return 0;
     }
 }
