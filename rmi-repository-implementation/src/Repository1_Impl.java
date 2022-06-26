@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Repository_Impl extends UnicastRemoteObject implements IRepository{
-    private HashMap<String, List<Integer>> repo;
+public class Repository1_Impl extends UnicastRemoteObject implements IRepository{
+    private HashMap<String, List<Integer>> repo = new HashMap<>();
 
-    protected Repository_Impl() throws RemoteException {
+    protected Repository1_Impl() throws RemoteException {
         super();
     }
 
@@ -51,6 +51,7 @@ public class Repository_Impl extends UnicastRemoteObject implements IRepository{
     public String set(String key, int value) throws RepException {
         List<Integer> value_list = new ArrayList();
         value_list.add(value);
+        System.out.println(repo);
         if(!repo.containsKey(key)){
             repo.put(key, value_list);
         }

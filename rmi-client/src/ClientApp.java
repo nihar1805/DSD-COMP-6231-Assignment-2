@@ -8,22 +8,25 @@ import java.rmi.registry.Registry;
 import java.util.*;
 
 public class ClientApp {
-    static Registry reg = null;
     static IRepository obj = null;
+    static Connector c = new Connector();
+    static IDirectory_Impl id = new IDirectory_Impl();
 
-    private static ArrayList<String> server_port_list = new ArrayList<String>();
-    private static int portS1;
-    private static int portS2;
-    private static int portS3;
+
+    public static ArrayList<String> server_port_list = new ArrayList<String>();
+    public static int portS1;
+    public static int portS2;
+    public static int portS3;
 
         public static void main(String[] args){
+
             try {
-                peerDiscovery();
+                id.peerDiscovery();
                 Runnable PortReceiver = new Runnable() {
                     @Override
                     public void run() {
                         // TODO Auto-generated method stub
-                        receiveport();
+                        id.receivePort();
                     }
                 };
                 Thread t = new Thread(PortReceiver);
@@ -57,8 +60,6 @@ public class ClientApp {
             String message = "";
 
             try {
-                InetAddress address = InetAddress.getByName("localhost");
-                DatagramSocket ds = new DatagramSocket();
                 Scanner in = new Scanner(System.in);
 
                 while (true) {
@@ -71,7 +72,8 @@ public class ClientApp {
 
                     String[] array = message.trim().split(" ");
 
-                    assignServer(message);
+
+                    c.assignServer(message);
 
                     if(array[0].equals("SET")){
                         String set_res = obj.set(array[1], Integer.parseInt(array[2]));
@@ -84,35 +86,43 @@ public class ClientApp {
                     }
 
                     else if(array[0].equals("GET")) {
-
+                        String add_res = String.valueOf(obj.get(array[1]));
+                        System.out.println("SERVER: " + add_res);
                     }
 
                     else if (array[0].equals("DELETE")){
-
+                        String add_res = String.valueOf(obj.delete(array[1]));
+                        System.out.println("SERVER: " + add_res);
                     }
 
                     else if(array[0].equals("LIST")){
-
+                        String add_res = String.valueOf(obj.list());
+                        System.out.println("SERVER: " + add_res);
                     }
 
                     else if (array[0].equals("SUM")){
-
-                    }
-
-                    else if (array[0].equals("DSUM")) {
-
+                        String add_res = String.valueOf(obj.sum(array[1]));
+                        System.out.println("SERVER: " + add_res);
                     }
 
                     else if (array[0].equals("RESET")){
-
+                        String add_res = String.valueOf(obj.delete_all());
+                        System.out.println("SERVER: " + add_res);
                     }
 
                     else if (array[0].equals("MIN")) {
-
+                        String add_res = String.valueOf(obj.min(array[1]));
+                        System.out.println("SERVER: " + add_res);
                     }
 
                     else if (array[0].equals("MAX")) {
+                        String add_res = String.valueOf(obj.max(array[1]));
+                        System.out.println("SERVER: " + add_res);
+                    }
 
+                    else if (array[0].equals("DSUM")) {
+//                        String add_res = String.valueOf(obj.dsum(message));
+//                        System.out.println("SERVER: " + add_res);
                     }
                 }
             }catch (Exception | RepException e) {
@@ -120,114 +130,9 @@ public class ClientApp {
             }
         }
 
-    public static void assignServer(String message) throws RemoteException, NotBoundException {
-        String[] array = message.trim().split(" ");
-        try {
-            if (message.contains("DSUM")) {
-                String ports = message + " " + portS2 + " " + portS3;
 
-            } else if (array[0].equals("RESET") || array[0].equals("LIST")) {
-                if (array.length == 1) {
-                    reg = LocateRegistry.getRegistry(7410);
-                    obj = (IRepository) reg.lookup("montreal");
-                } else if (array[1].equals("r2")) {
-                    reg = LocateRegistry.getRegistry(7410);
-                    obj = (IRepository) reg.lookup("montreal");
-                } else if (array[1].equals("r3")) {
-                    reg = LocateRegistry.getRegistry(7410);
-                    obj = (IRepository) reg.lookup("montreal");
-                } else if (!array[1].equals("r2") || !array[1].equals("r3") || !array[1].equals("r1")) {
-                    System.out.println("Repository doesn't exist");
-                }
 
-            } else {
-                if (message.contains(".")) {
-                    String[] input_msg = message.trim().split(" ");
-                    String[] rep = input_msg[1].split("[.]");
 
-                    if (rep[0].equals("r2")) {
-                        reg = LocateRegistry.getRegistry(7410);
-                        obj = (IRepository) reg.lookup("montreal");
-                    } else if (rep[0].equals("r3")) {
-                        reg = LocateRegistry.getRegistry(7410);
-                        obj = (IRepository) reg.lookup("montreal");
-                    }
-                } else {
-                    reg = LocateRegistry.getRegistry(7410);
-                    obj = (IRepository) reg.lookup("montreal");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-    }
 
-        private static void peerDiscovery() {
-            try {
-                DatagramSocket udpmultiSocket = new DatagramSocket();
-                udpmultiSocket.setBroadcast(true);
-                byte[] msg = "Waiting for port...".getBytes(StandardCharsets.UTF_8);
-
-                DatagramPacket packet = new DatagramPacket(msg, msg.length, InetAddress.getByName("255.255.255.255"), 8888);
-                udpmultiSocket.send(packet);
-
-                Enumeration interfaces = null;
-
-                interfaces = NetworkInterface.getNetworkInterfaces();
-                while (interfaces.hasMoreElements()) {
-                    NetworkInterface networkInterface = (NetworkInterface) interfaces.nextElement();
-
-                    if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                        continue;
-                    }
-
-                    for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                        InetAddress broadcast = interfaceAddress.getBroadcast();
-
-                        if (broadcast == null) {
-                            continue;
-                        }
-
-                        try {
-                            DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, broadcast, 7777);
-                            udpmultiSocket.send(sendPacket);
-
-                            DatagramPacket sendPacket2 = new DatagramPacket(msg, msg.length, broadcast, 8888);
-                            udpmultiSocket.send(sendPacket2);
-
-                            DatagramPacket sendPacket3 = new DatagramPacket(msg, msg.length, broadcast, 9999);
-                            udpmultiSocket.send(sendPacket3);
-//                        System.out.println("Packet sent");
-
-                        } catch (Exception e) {
-                        }
-                    }
-                }
-//            Thread.sleep(5000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        public static void receiveport() {
-            try{
-                DatagramSocket s = new DatagramSocket(6231, InetAddress.getByName("0.0.0.0"));
-                while(true){
-                    byte[] buf = new byte[1000];
-                    DatagramPacket port_msg = new DatagramPacket(buf, buf.length);
-//                System.out.println("waiting for server response");
-                    s.receive(port_msg);
-//                System.out.println("Response received from server");
-                    String portString = new String(port_msg.getData()).trim();
-//                System.out.println("Port Received : "+ portString);
-                    server_port_list.add(portString);
-
-                }
-
-            }catch (Exception e){
-                System.out.println(e);
-            }
-        }
 }
