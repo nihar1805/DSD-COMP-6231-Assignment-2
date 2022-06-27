@@ -17,8 +17,9 @@ public class ClientApp {
     public static int portS1;
     public static int portS2;
     public static int portS3;
+    private static Registry reg;
 
-        public static void main(String[] args){
+    public static void main(String[] args){
 
             try {
                 id.peerDiscovery();
@@ -73,7 +74,9 @@ public class ClientApp {
                     String[] array = message.trim().split(" ");
 
 
-                    c.assignServer(message);
+                    if (!array[0].equals("DSUM")) {
+                        c.assignServer(message);
+                    }
 
                     if(array[0].equals("SET")){
                         String set_res = obj.set(array[1], Integer.parseInt(array[2]));
@@ -121,8 +124,9 @@ public class ClientApp {
                     }
 
                     else if (array[0].equals("DSUM")) {
-//                        String add_res = String.valueOf(obj.dsum(message));
-//                        System.out.println("SERVER: " + add_res);
+                        String ports = message + " "+ portS2 + " " + portS3 ;
+                        String add_res = String.valueOf(obj.aggregate(ports));
+                        System.out.println("SERVER: " + add_res);
                     }
                 }
             }catch (Exception | RepException e) {

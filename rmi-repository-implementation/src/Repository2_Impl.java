@@ -1,3 +1,4 @@
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -83,6 +84,11 @@ public class Repository2_Impl extends UnicastRemoteObject implements IRepository
 
     @Override
     public int max(String key) throws RepException {
+        return 0;
+    }
+
+    @Override
+    public int aggregate(String message) throws RemoteException, NotBoundException, RepException {
         return 0;
     }
 }

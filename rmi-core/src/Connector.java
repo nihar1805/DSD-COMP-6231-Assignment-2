@@ -14,10 +14,10 @@ public class Connector {
     public void assignServer(String message) throws RemoteException, NotBoundException {
         String[] array = message.trim().split(" ");
         try {
-//            if (message.contains("DSUM")) {
-//                String ports = message + " " + portS2 + " " + portS3;
-//
-//            } else
+            if (message.contains("DSUM")) {
+                reg = LocateRegistry.getRegistry(ClientApp.portS1);
+                ClientApp.obj = (IRepository) reg.lookup("r1");
+            } else
             if (array[0].equals("RESET") || array[0].equals("LIST")) {
                 if (array.length == 1) {
                     reg = LocateRegistry.getRegistry(ClientApp.portS1);
