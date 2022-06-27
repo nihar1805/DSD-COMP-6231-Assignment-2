@@ -1,11 +1,16 @@
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class Repository1_Impl extends UnicastRemoteObject implements IRepository{
+public class Repository1_Impl extends UnicastRemoteObject implements IRepository,IDistributedRepository{
     private HashMap<String, List<Integer>> repo = new HashMap<>();
+    private Registry reg;
 
     protected Repository1_Impl() throws RemoteException {
         super();
@@ -106,5 +111,45 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
             }
         }
         return max;
+    }
+
+    @Override
+    public int aggregate(String message) throws RemoteException, NotBoundException, RepException {
+        String[] msg_array = message.trim().split(" ");
+        IRepository obj2 = null;
+        int index1 = msg_array.length - 1;
+        int index2 = msg_array.length - 2;
+        int portS3 = Integer.parseInt(msg_array[index1]);
+        int portS2 = Integer.parseInt(msg_array[index2]);
+        String key = msg_array[1];
+
+        List<String> dsum_list = new ArrayList<String>(Arrays.asList(msg_array));
+        dsum_list.remove(index1);
+        dsum_list.remove(index2);
+
+        int flag = 0;
+        int final_sum = 0;
+        for(int i=3; i<dsum_list.size();i++){
+            if(dsum_list.get(i).equals("r2")) {
+                String msg = "DSUM " + key;
+                reg = LocateRegistry.getRegistry(ClientApp.portS2);
+                obj2 = (IRepository) reg.lookup("r2");
+                final_sum = final_sum + obj2.sum(key);
+            }
+            else if(dsum_list.get(i).equals("r3")){
+                reg = LocateRegistry.getRegistry(ClientApp.portS3);
+                obj2 = (IRepository) reg.lookup("r3");
+                final_sum = final_sum + obj2.sum(key);
+
+            }
+            else{
+                flag = 1;
+                System.out.println("ERR Non-existence or ambiguous repository r4");
+            }
+        }
+        if (flag == 1) {
+            return 0;
+            }
+        return final_sum;
     }
 }

@@ -2,7 +2,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public interface IRepository extends Remote,IAggregate {
+public interface IRepository extends Remote,IAggregate,IDistributedRepository {
 
     String delete_all() throws RepException, RemoteException;
     String delete(String key) throws RepException, RemoteException;
