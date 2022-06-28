@@ -71,60 +71,50 @@ public class ClientApp {
 //                System.out.println();
                     byte[] buffer = message.getBytes(StandardCharsets.UTF_8);
 
-                    String[] array = message.trim().split(" ");
-
-
-                    if (!array[0].equals("DSUM")) {
-                        c.assignServer(message);
+                    String[] array = new String[0];
+                    String key = "";
+                    if (message.contains(".")) {
+                        array = message.trim().split(" ");
+                        String[] rep = array[1].split("[.]");
+                        String repid = rep[0];
+                        key = rep[1];
+                    } else {
+                        array = message.trim().split(" ");
+                        if(array.length > 1) {
+                            key = array[1];
+                        }
                     }
+                    c.assignServer(message);
 
-                    if(array[0].equals("SET")){
-                        String set_res = obj.set(array[1], Integer.parseInt(array[2]));
+                    if (array[0].equals("SET")) {
+                        String set_res = obj.set(key, Integer.parseInt(array[2]));
                         System.out.println("SERVER: " + set_res);
-                    }
-
-                    else if (array[0].equals("ADD")) {
-                        String add_res = obj.add(array[1], Integer.parseInt(array[2]));
+                    } else if (array[0].equals("ADD")) {
+                        String add_res = obj.add(key, Integer.parseInt(array[2]));
                         System.out.println("SERVER: " + add_res);
-                    }
-
-                    else if(array[0].equals("GET")) {
-                        String add_res = String.valueOf(obj.get(array[1]));
+                    } else if (array[0].equals("GET")) {
+                        String add_res = String.valueOf(obj.get(key));
                         System.out.println("SERVER: " + add_res);
-                    }
-
-                    else if (array[0].equals("DELETE")){
-                        String add_res = String.valueOf(obj.delete(array[1]));
+                    } else if (array[0].equals("DELETE")) {
+                        String add_res = String.valueOf(obj.delete(key));
                         System.out.println("SERVER: " + add_res);
-                    }
-
-                    else if(array[0].equals("LIST")){
+                    } else if (array[0].equals("LIST")) {
                         String add_res = String.valueOf(obj.list());
                         System.out.println("SERVER: " + add_res);
-                    }
-
-                    else if (array[0].equals("SUM")){
-                        String add_res = String.valueOf(obj.sum(array[1]));
+                    } else if (array[0].equals("SUM")) {
+                        String add_res = String.valueOf(obj.sum(key));
                         System.out.println("SERVER: " + add_res);
-                    }
-
-                    else if (array[0].equals("RESET")){
+                    } else if (array[0].equals("RESET")) {
                         String add_res = String.valueOf(obj.delete_all());
                         System.out.println("SERVER: " + add_res);
-                    }
-
-                    else if (array[0].equals("MIN")) {
-                        String add_res = String.valueOf(obj.min(array[1]));
+                    } else if (array[0].equals("MIN")) {
+                        String add_res = String.valueOf(obj.min(key));
                         System.out.println("SERVER: " + add_res);
-                    }
-
-                    else if (array[0].equals("MAX")) {
-                        String add_res = String.valueOf(obj.max(array[1]));
+                    } else if (array[0].equals("MAX")) {
+                        String add_res = String.valueOf(obj.max(key));
                         System.out.println("SERVER: " + add_res);
-                    }
-
-                    else if (array[0].equals("DSUM")) {
-                        String ports = message + " "+ portS2 + " " + portS3 ;
+                    } else if (array[0].equals("DSUM")) {
+                        String ports = message + " " + portS2 + " " + portS3;
                         String add_res = String.valueOf(obj.aggregate(ports));
                         System.out.println("SERVER: " + add_res);
                     }
