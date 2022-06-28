@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Repository2_Impl extends UnicastRemoteObject implements IRepository{
-    private HashMap<String, List<Integer>> repo;
+    private static HashMap<String, List<Integer>> repo = new HashMap<>();
 
     protected Repository2_Impl() throws RemoteException {
         super();
@@ -74,21 +74,43 @@ public class Repository2_Impl extends UnicastRemoteObject implements IRepository
 
     @Override
     public int sum(String key) throws RepException {
-        return 0;
+        System.out.println(key);
+        System.out.println(repo);
+        List<Integer> values = repo.get(key);
+
+        int sum = 0;
+        for (int i = 0; i < values.size(); i++){
+            sum = sum + values.get(i);
+        }
+        return sum;
     }
 
     @Override
     public int min(String key) throws RepException {
-        return 0;
+        List<Integer> values = repo.get(key);
+        int min = values.get(0);
+        for(int i=0; i<values.size(); i++){
+            if(values.get(i) < min){
+                min = values.get(i);
+            }
+        }
+        return min;
     }
 
     @Override
     public int max(String key) throws RepException {
-        return 0;
+        List<Integer> values = repo.get(key);
+        int max = values.get(0);
+        for(int i=0; i<values.size(); i++){
+            if(values.get(i) > max){
+                max = values.get(i);
+            }
+        }
+        return max;
     }
 
     @Override
-    public int aggregate(String message) throws RemoteException, NotBoundException, RepException {
+    public int aggregate(String message) throws RepException {
         return 0;
     }
 }

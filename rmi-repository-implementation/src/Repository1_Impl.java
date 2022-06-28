@@ -1,3 +1,7 @@
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -13,8 +17,11 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
     private Registry reg;
 
     protected Repository1_Impl() throws RemoteException {
-        super();
     }
+
+//    protected Repository1_Impl() throws RemoteException {
+//        super();
+//    }
 
     @Override
     public String delete_all() throws RepException {
@@ -56,7 +63,7 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
     public String set(String key, int value) throws RepException {
         List<Integer> value_list = new ArrayList();
         value_list.add(value);
-        System.out.println(repo);
+//        System.out.println(repo);
         if(!repo.containsKey(key)){
             repo.put(key, value_list);
         }
@@ -114,9 +121,10 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
     }
 
     @Override
-    public int aggregate(String message) throws RemoteException, NotBoundException, RepException {
+    public int aggregate(String message) throws RepException {
         String[] msg_array = message.trim().split(" ");
-        IRepository obj2 = null;
+//        System.out.println("Inside aggregate");
+
         int index1 = msg_array.length - 1;
         int index2 = msg_array.length - 2;
         int portS3 = Integer.parseInt(msg_array[index1]);
@@ -128,28 +136,56 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
         dsum_list.remove(index2);
 
         int flag = 0;
-        int final_sum = 0;
+        int final_sum = this.sum(key);
+
+//        System.out.println(final_sum);
+
         for(int i=3; i<dsum_list.size();i++){
             if(dsum_list.get(i).equals("r2")) {
-                String msg = "DSUM " + key;
-                reg = LocateRegistry.getRegistry(ClientApp.portS2);
-                obj2 = (IRepository) reg.lookup("r2");
-                final_sum = final_sum + obj2.sum(key);
+//                String msg = "DSUM " + key;
+                final_sum += requestAnotherServer(key, portS2);
             }
             else if(dsum_list.get(i).equals("r3")){
-                reg = LocateRegistry.getRegistry(ClientApp.portS3);
-                obj2 = (IRepository) reg.lookup("r3");
-                final_sum = final_sum + obj2.sum(key);
-
+                String msg = "DSUM " + key;
+                final_sum += requestAnotherServer(key, portS3);
             }
             else{
                 flag = 1;
                 System.out.println("ERR Non-existence or ambiguous repository r4");
             }
         }
-        if (flag == 1) {
-            return 0;
+        return final_sum;
+    }
+
+    public int requestAnotherServer(String key, int port) {
+        DatagramSocket ds = null;
+        byte[] buffer = new byte[1024];
+
+        int final_sum = 0;
+        try {
+            ds = new DatagramSocket();
+            String msg = "DSUM " + key;
+            buffer = msg.getBytes(StandardCharsets.UTF_8);
+            DatagramPacket request = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("localhost"), port);
+            ds.send(request);
+//            System.out.println("Packet Sent TO PORT" + port);
+            byte[] buff = new byte[1024];
+
+            DatagramPacket response2 = new DatagramPacket(buff, buff.length, InetAddress.getByName("localhost"), 2345);
+            ds.receive(response2);
+//            System.out.println("Packet Received");
+            String set_res = new String(response2.getData(), StandardCharsets.UTF_8).replaceAll("\u0000.*", "");
+
+            final_sum = Integer.parseInt(set_res);
+//            System.out.println(final_sum);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally {
+            if (ds != null) {
+                ds.close();
             }
+        }
         return final_sum;
     }
 }
