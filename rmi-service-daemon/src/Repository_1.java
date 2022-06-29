@@ -1,7 +1,4 @@
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -9,17 +6,25 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Repository_1 extends Repository1_Impl {
+    public static Registry reg;
     private static DatagramSocket socket;
+
 
     protected Repository_1(int port) throws RemoteException, SocketException {
         socket = new DatagramSocket(port);
     }
 
     public static void main(String[] args) throws Exception, RepException {
+
+        reg = LocateRegistry.createRegistry(7410);
         Repository1_Impl r1obj = new Repository1_Impl();
-        Registry reg = LocateRegistry.createRegistry(7410);
-        reg.bind("r1", r1obj);
-        System.out.println("Repository Server 1 Running on port 9630");
+        IRegistry_Impl registry = new IRegistry_Impl();
+        registry.register(r1obj);
+
+//        Repository1_Impl r1obj = new Repository1_Impl();
+//        Registry reg = LocateRegistry.createRegistry(7410);
+//        reg.bind("r1", r1obj);
+//        System.out.println("Repository Server 1 Running on port 9630");
 
         int port = 1234;
         Repository_1 server = new Repository_1(port);

@@ -21,9 +21,12 @@ public class Repository_2 extends Repository2_Impl {
 
     public static void main(String[] args) throws Exception, RepException {
         Repository2_Impl r2obj = new Repository2_Impl();
-        Registry reg = LocateRegistry.createRegistry(5454);
-        reg.bind("r2", r2obj);
-        System.out.println("Repository Server 2 Running  on port 5454");
+        IRegistry_Impl registry = new IRegistry_Impl();
+        registry.register(r2obj);
+
+//        Registry reg = LocateRegistry.createRegistry(5454);
+//        reg.bind("r2", r2obj);
+//        System.out.println("Repository Server 2 Running  on port 5454");
 
         int port = 7894;
         Repository_2 server = new Repository_2(port);
