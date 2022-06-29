@@ -19,9 +19,12 @@ public class Repository_3 extends Repository3_Impl {
 
     public static void main(String[] args) throws Exception, RepException {
         Repository3_Impl r3obj = new Repository3_Impl();
-        Registry reg = LocateRegistry.createRegistry(6495);
-        reg.bind("r3", r3obj);
-        System.out.println("Repository Server 3 Running on port 6495");
+        IRegistry_Impl registry = new IRegistry_Impl();
+        registry.register(r3obj);
+
+//        Registry reg = LocateRegistry.createRegistry(6495);
+//        reg.bind("r3", r3obj);
+//        System.out.println("Repository Server 3 Running on port 6495");
 
         int port = 8456;
         Repository_3 server = new Repository_3(port);
