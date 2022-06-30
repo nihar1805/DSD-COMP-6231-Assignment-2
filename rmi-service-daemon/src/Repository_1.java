@@ -29,8 +29,6 @@ public class Repository_1 extends Repository1_Impl {
         int port = 1234;
         Repository_1 server = new Repository_1(port);
         System.out.println("Server 1 is running...");
-//            server.peerDiscovery();
-//            server.protocol();
         Runnable PortRequestReceiver = new Runnable() {
             @Override
             public void run() {
