@@ -1,4 +1,3 @@
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -36,8 +35,9 @@ public class Repository3_Impl extends UnicastRemoteObject implements IRepository
     }
 
     @Override
-    public List<String> list() throws RepException {
+    public String list() throws RepException {
         List<String> l = new ArrayList<String>();
+        String reply = "";
         if (!repo.isEmpty()) {
             for (String s : repo.keySet()){
                 l.add(s);
@@ -45,7 +45,11 @@ public class Repository3_Impl extends UnicastRemoteObject implements IRepository
         } else {
             l.add("empty");
         }
-        return l;
+        for (String i : l) {
+            reply += " " + i + ",";
+        }
+        reply = reply.substring(0, (reply.length() - 1));
+        return reply;
     }
 
     @Override
@@ -62,14 +66,31 @@ public class Repository3_Impl extends UnicastRemoteObject implements IRepository
     }
 
     @Override
-    public List<Integer> get(String key) throws RepException {
+    public String get(String key) throws RepException {
+        String reply = "";
         if (!repo.containsKey(key)) {
             List<Integer> i = new ArrayList<>();
             i.add(0);
-            return i;
+            return "No key found!";
+        } else {
+            List<Integer> res = repo.get(key);
+            for (Integer i : res) {
+                reply += " " + i.toString() + ",";
+            }
         }
+        reply = reply.substring(0, (reply.length() - 1));
 
-        return repo.get(key);
+        return reply;
+    }
+
+    @Override
+    public String enumKeys(String key) throws RepException, RemoteException {
+        return null;
+    }
+
+    @Override
+    public String enumValues(String key) throws RepException, RemoteException {
+        return null;
     }
 
     @Override

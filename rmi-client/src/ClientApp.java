@@ -93,30 +93,36 @@ public class ClientApp {
                         String add_res = obj.add(key, Integer.parseInt(array[2]));
                         System.out.println("SERVER: " + add_res);
                     } else if (array[0].equals("GET")) {
-                        String add_res = String.valueOf(obj.get(key));
-                        System.out.println("SERVER: " + add_res);
+                        String add_res = obj.get(key);
+                        System.out.println("SERVER: OK " + add_res);
                     } else if (array[0].equals("DELETE")) {
                         String add_res = String.valueOf(obj.delete(key));
                         System.out.println("SERVER: " + add_res);
                     } else if (array[0].equals("LIST")) {
                         String add_res = String.valueOf(obj.list());
-                        System.out.println("SERVER: " + add_res);
+                        System.out.println("SERVER: OK " + add_res);
                     } else if (array[0].equals("SUM")) {
                         String add_res = String.valueOf(obj.sum(key));
-                        System.out.println("SERVER: " + add_res);
+                        System.out.println("SERVER: OK " + add_res);
                     } else if (array[0].equals("RESET")) {
                         String add_res = String.valueOf(obj.delete_all());
                         System.out.println("SERVER: " + add_res);
                     } else if (array[0].equals("MIN")) {
                         String add_res = String.valueOf(obj.min(key));
-                        System.out.println("SERVER: " + add_res);
+                        System.out.println("SERVER: OK " + add_res);
                     } else if (array[0].equals("MAX")) {
                         String add_res = String.valueOf(obj.max(key));
-                        System.out.println("SERVER: " + add_res);
+                        System.out.println("SERVER: OK " + add_res);
                     } else if (array[0].equals("DSUM")) {
                         String ports = message + " " + portS2 + " " + portS3;
                         String add_res = String.valueOf(obj.aggregate(ports));
-                        System.out.println("SERVER: " + add_res);
+                        System.out.println("SERVER: OK " + add_res);
+                    } else if (array[0].equals("ENUM") && array[1].equals("KEYS")) {
+                        String add_res = String.valueOf(obj.enumKeys(key));
+                        System.out.println("SERVER: OK " + add_res);
+                    } else if (array[0].equals("ENUM") && array[1].equals("VALUES")) {
+                        String add_res = String.valueOf(obj.enumValues(key));
+                        System.out.println("SERVER: OK " + add_res);
                     }
                 }
             }catch (Exception | RepException e) {
