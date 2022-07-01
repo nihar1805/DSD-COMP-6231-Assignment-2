@@ -94,13 +94,38 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
     }
 
     @Override
-    public String enumKeys(String key) throws RepException, RemoteException {
-        return null;
+    public String enumKeys() throws RepException, RemoteException {
+        List<String> l = new ArrayList<String>();
+        String reply = "";
+        if (!repo.isEmpty()) {
+            for (String s : repo.keySet()){
+                l.add(s);
+            }
+        } else {
+            l.add("empty");
+        }
+        for (String i : l) {
+            reply += " " + i + ",";
+        }
+        reply = reply.substring(0, (reply.length() - 1));
+        return reply;
     }
 
     @Override
     public String enumValues(String key) throws RepException, RemoteException {
-        return null;
+        String reply = "";
+        if (!repo.containsKey(key)) {
+            List<Integer> i = new ArrayList<>();
+            i.add(0);
+            return "No key found!";
+        } else {
+            List<Integer> res = repo.get(key);
+            for (Integer i : res) {
+                reply += " " + i.toString() + ",";
+            }
+        }
+        reply = reply.substring(0, (reply.length() - 1));
+        return reply;
     }
 
     @Override
@@ -144,6 +169,7 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
         String[] msg_array = message.trim().split(" ");
 //        System.out.println("Inside aggregate");
 
+        System.out.println(message);
         int index1 = msg_array.length - 1;
         int index2 = msg_array.length - 2;
         int portS3 = Integer.parseInt(msg_array[index1]);
