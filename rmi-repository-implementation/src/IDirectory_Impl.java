@@ -57,17 +57,17 @@ public class IDirectory_Impl implements IDirectory{
     @Override
     public void receivePort() {
         try{
+            int i =0;
             DatagramSocket s = new DatagramSocket(6231, InetAddress.getByName("0.0.0.0"));
-            while(true){
+            while(i <= 3){
                 byte[] buf = new byte[1000];
                 DatagramPacket port_msg = new DatagramPacket(buf, buf.length);
 //                System.out.println("waiting for server response");
                 s.receive(port_msg);
 //                System.out.println("Response received from server");
                 String portString = new String(port_msg.getData()).trim();
-//                System.out.println("Port Received : "+ portString);
                 ClientApp.server_port_list.add(portString);
-
+                i++;
             }
 
         }catch (Exception e){
