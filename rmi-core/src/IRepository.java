@@ -9,8 +9,6 @@ public interface IRepository extends Remote,IAggregate,IDistributedRepository {
     String list() throws RepException, RemoteException;
     String set(String key, int value) throws RepException, RemoteException;
     String get(String key) throws RepException, RemoteException;
-
     String enumKeys() throws RepException, RemoteException;
-
     String enumValues(String key) throws RepException, RemoteException;
 }
