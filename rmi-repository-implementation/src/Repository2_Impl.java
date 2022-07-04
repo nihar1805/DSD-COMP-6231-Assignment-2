@@ -144,8 +144,6 @@ public class Repository2_Impl extends UnicastRemoteObject implements IRepository
     @Override
     public String enumKeys() throws RepException, RemoteException {
         String reply = "";
-        ICallback_Impl callback = new ICallback_Impl();
-
         Set<String> l;
         List<String> enumKeys = new ArrayList<>();
         l = repo.keySet();
@@ -154,7 +152,8 @@ public class Repository2_Impl extends UnicastRemoteObject implements IRepository
 
         else {
             for (String key : l) {
-                enumKeys.add(String.valueOf(callback.transform(key)));
+                ICallback_Impl callback = new ICallback_Impl(key);
+                enumKeys.add(callback.getValue());
             }
         }
         for (String i : l) {
@@ -169,15 +168,14 @@ public class Repository2_Impl extends UnicastRemoteObject implements IRepository
     @Override
     public String enumValues(String key) throws RepException, RemoteException {
         String reply = "";
-        ICallback_Impl callback = new ICallback_Impl();
-
         List<Integer> values = repo.get(key);
         List<Integer> enumVal = new ArrayList<>();
         if (values == null) throw new RepException("Key does not exist!!");
 
         else {
             for (Integer value : values) {
-                enumVal.add(Integer.valueOf(callback.transform(String.valueOf(value))));
+                ICallback_Impl callback = new ICallback_Impl(String.valueOf(value));
+                enumVal.add(Integer.valueOf(callback.getValue()));
             }
         }
 

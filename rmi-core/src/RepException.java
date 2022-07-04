@@ -6,6 +6,5 @@ public class RepException extends Throwable{
     public RepException(String s) {
         super(s);
         this.message = s;
-        System.out.println(s);
     }
 }
