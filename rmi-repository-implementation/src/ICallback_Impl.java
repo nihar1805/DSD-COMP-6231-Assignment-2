@@ -1,7 +1,12 @@
 public class ICallback_Impl implements ICallback{
-    @Override
-    public String transform(String value) throws RepException {
 
-        return value;
+    private String val;
+    public ICallback_Impl(String val) {
+        this.val = val;
+    }
+
+    @Override
+    public String getValue() {
+        return val;
     }
 }

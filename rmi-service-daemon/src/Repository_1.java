@@ -21,7 +21,7 @@ public class Repository_1 extends Repository1_Impl {
         socket = new DatagramSocket(port);
     }
 
-    public static void main(String[] args) throws Exception, RepException {
+    public static void main(String[] args) throws Exception {
 
         reg = LocateRegistry.createRegistry(7474);
         Repository1_Impl r1obj = new Repository1_Impl();
@@ -50,7 +50,7 @@ public class Repository_1 extends Repository1_Impl {
 
     }
 
-    private void protocol() throws IOException, NotBoundException {
+    private void protocol() throws IOException {
         String add_res = "";
         DatagramSocket socket = new DatagramSocket(7410);
 

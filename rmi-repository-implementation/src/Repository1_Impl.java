@@ -20,8 +20,9 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
 
     @Override
     public String delete_all() throws RepException {
-        if (repo.isEmpty()) throw new RepException("Repository is Empty!!");
-        else
+        if (repo.isEmpty()) {
+            throw new RepException("Repository is Empty!!");
+        } else
             repo.clear();
         return "OK";
     }
@@ -147,7 +148,7 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
         String[] msg_array = message.trim().split(" ");
 //        System.out.println("Inside aggregate");
 
-        System.out.println(message);
+//        System.out.println(message);
         int index1 = msg_array.length - 1;
         int index2 = msg_array.length - 2;
         int portS3 = Integer.parseInt(msg_array[index1]);
@@ -158,7 +159,6 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
         dsum_list.remove(index1);
         dsum_list.remove(index2);
 
-        int flag = 0;
         int final_sum = this.sum(key);
 
 //        System.out.println(final_sum);
@@ -169,7 +169,7 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
                 final_sum += requestAnotherServer(key, portS2);
             }
             else if(dsum_list.get(i).equals("r3")){
-                String msg = "DSUM " + key;
+//                String msg = "DSUM " + key;
                 final_sum += requestAnotherServer(key, portS3);
             }
             else{
@@ -215,7 +215,6 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
     @Override
     public String enumKeys() throws RepException, RemoteException {
         String reply = "";
-        ICallback_Impl callback = new ICallback_Impl();
 
         Set<String> l;
         List<String> enumKeys = new ArrayList<>();
@@ -225,7 +224,8 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
 
         else {
             for (String key : l) {
-                enumKeys.add(String.valueOf(callback.transform(key)));
+                ICallback_Impl callback = new ICallback_Impl(key);
+                enumKeys.add(callback.getValue());
             }
         }
         for (String i : l) {
@@ -241,7 +241,7 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
     @Override
     public String enumValues(String key) throws RepException, RemoteException {
         String reply = "";
-        ICallback_Impl callback = new ICallback_Impl();
+
 
         List<Integer> values = repo.get(key);
         List<Integer> enumVal = new ArrayList<>();
@@ -250,14 +250,19 @@ public class Repository1_Impl extends UnicastRemoteObject implements IRepository
             throw new RepException("Key does not exist!!");
         } else {
             for (Integer value : values) {
-                enumVal.add(Integer.valueOf(callback.transform(String.valueOf(value))));
+                ICallback_Impl callback = new ICallback_Impl(String.valueOf(value));
+                enumVal.add(Integer.valueOf(callback.getValue()));
             }
         }
+
+//        System.out.println(enumVal);
 
         for (int i : enumVal) {
             reply += " " + i + ",";
         }
         reply = reply.substring(0, (reply.length() - 1));
+//        System.out.println(reply);
+
         return reply;
     }
 }
